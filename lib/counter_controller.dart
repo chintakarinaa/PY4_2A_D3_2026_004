@@ -1,6 +1,6 @@
 class CounterController {
   int _counter = 0;
-  int _step = 1; // step default = 1
+  int _step = 1;
 
   final List<String> _history = [];
 
@@ -18,9 +18,9 @@ class CounterController {
     final now = DateTime.now();
     final time =
         '${now.hour.toString().padLeft(2, '0')}:'
-        '${now.minute.toString().padLeft(2, '0')}:'
-        '${now.second.toString().padLeft(2, '0')}';
-      _history.add('[$time] $message');
+        '${now.minute.toString().padLeft(2, '0')}';
+
+    _history.add('[$time] $message');
 
     // Batasin 5 data terakhir
     if (_history.length > 5) {

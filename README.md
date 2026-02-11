@@ -1,16 +1,5 @@
-# logbook_app_004
+Self-Reflection: "Bagaimana prinsip SRP membantu kalian saat harus menambah fitur History Logger tadi?"
 
-A new Flutter project.
+Prinsip Single Responsibility Principle (SRP) membantu saya saat menambahkan fitur riwayat aktivitas karena sejak awal logika dan tampilan sudah dipisahkan secara jelas. Controller hanya bertanggung jawab mengelola data dan logika (counter, step, dan riwayat), sedangkan View hanya bertugas menampilkan data dan menangani interaksi pengguna (UI/UX).
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Sehingga saat saya menambahkan fitur riwayat aktivitas, saya hanya perlu memodifikasi controller dengan menambahkan List untuk menyimpan aktivitas, tanpa mengubah logika tampilan secara kompleks. Sedangkan View cukup mengambil data riwayat dari controller dan menampilkannya menggunakan ListView. Dengan penerapan SRP, kode menjadi lebih rapih, mudah dipahami, dan mudah untuk dikembangkan (clean code).

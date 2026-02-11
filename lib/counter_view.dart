@@ -13,18 +13,49 @@ class _CounterViewState extends State<CounterView> {
   final TextEditingController _stepController =
       TextEditingController(text: '1');
 
+  void _showResetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Reset"),
+        content: const Text(
+          "Apakah kamu yakin ingin mereset counter?\nRiwayat akan tetap tersimpan.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() => _controller.reset());
+              Navigator.pop(context);
+            },
+            child: const Text("Ya, Reset"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getHistoryColor(String text) {
+    if (text.contains("Tambah")) {
+      return Colors.green;
+    } else if (text.contains("Kurang")) {
+      return Colors.red;
+    } else {
+      return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("LogBook: Versi SRP"),
-      ),
+      appBar: AppBar(title: const Text("LogBook: Versi SRP")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-
             const Text("Total Hitungan"),
             Text(
               '${_controller.value}',
@@ -33,7 +64,6 @@ class _CounterViewState extends State<CounterView> {
 
             const SizedBox(height: 20),
 
-            // Input Step
             TextField(
               controller: _stepController,
               keyboardType: TextInputType.number,
@@ -49,28 +79,23 @@ class _CounterViewState extends State<CounterView> {
 
             const SizedBox(height: 20),
 
-            // Tombol
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    setState(() => _controller.decrement());
-                  },
+                  onPressed: () =>
+                      setState(() => _controller.decrement()),
                   child: const Text("-"),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    setState(() => _controller.increment());
-                  },
+                  onPressed: () =>
+                      setState(() => _controller.increment()),
                   child: const Text("+"),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    setState(() => _controller.reset());
-                  },
+                  onPressed: _showResetDialog,
                   child: const Text("Reset"),
                 ),
               ],
@@ -83,13 +108,17 @@ class _CounterViewState extends State<CounterView> {
 
             Expanded(
               child: ListView(
-                children: _controller.history
-                    .map(
-                      (item) => ListTile(
-                        title: Text(item),
+                children: _controller.history.map((item) {
+                  return ListTile(
+                    title: Text(
+                      item,
+                      style: TextStyle(
+                        color: _getHistoryColor(item),
+                        fontWeight: FontWeight.w500,
                       ),
-                    )
-                    .toList(),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
           ],
