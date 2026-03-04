@@ -5,7 +5,7 @@ import 'package:logbook_app_004/services/mongo_service.dart';
 import 'package:logbook_app_004/helpers/log_helper.dart';
 
 class LogController {
-  final String currentUser; 
+  final String currentUser;
 
   LogController(this.currentUser);
 
@@ -30,12 +30,11 @@ class LogController {
         source: "log_controller.dart",
         level: 1,
       );
+      rethrow;
     }
   }
 
-  Future<void> addLog(
-      String title, String desc, String category) async {
-
+  Future<void> addLog(String title, String desc, String category) async {
     final newLog = LogModel(
       id: ObjectId(),
       userId: currentUser,
@@ -47,7 +46,7 @@ class LogController {
 
     try {
       await MongoService().insertLog(newLog);
-      await fetchLogs(); 
+      await fetchLogs();
 
       await LogHelper.writeLog(
         "SUCCESS: Tambah '$title' oleh $currentUser",
@@ -60,18 +59,19 @@ class LogController {
         source: "log_controller.dart",
         level: 1,
       );
+      rethrow;
     }
   }
 
   Future<void> updateLogById(
-      ObjectId id,
-      String title,
-      String desc,
-      String category) async {
-
+    ObjectId id,
+    String title,
+    String desc,
+    String category,
+  ) async {
     final updatedLog = LogModel(
       id: id,
-      userId: currentUser, 
+      userId: currentUser,
       title: title,
       description: desc,
       date: DateTime.now().toIso8601String(),
@@ -80,7 +80,7 @@ class LogController {
 
     try {
       await MongoService().updateLog(updatedLog);
-      await fetchLogs(); 
+      await fetchLogs();
 
       await LogHelper.writeLog(
         "SUCCESS: Update '$title' oleh $currentUser",
@@ -93,13 +93,14 @@ class LogController {
         source: "log_controller.dart",
         level: 1,
       );
+      rethrow;
     }
   }
 
   Future<void> deleteById(ObjectId id) async {
     try {
       await MongoService().deleteLog(id);
-      await fetchLogs(); 
+      await fetchLogs();
 
       await LogHelper.writeLog(
         "SUCCESS: Delete ID $id oleh $currentUser",
@@ -112,6 +113,7 @@ class LogController {
         source: "log_controller.dart",
         level: 1,
       );
+      rethrow;
     }
   }
 }

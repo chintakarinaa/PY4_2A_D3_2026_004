@@ -22,6 +22,35 @@ class LogItemWidget extends StatelessWidget {
     }
   }
 
+  String _formatDate(String isoDate) {
+    try {
+      final clean = isoDate.split('.').first;
+      final date = DateTime.parse(clean);
+      final now = DateTime.now();
+      final diff = now.difference(date);
+
+      if (diff.inMinutes < 1) {
+        return "baru saja";
+      }
+
+      if (diff.inMinutes < 60) {
+        return "${diff.inMinutes} menit yang lalu";
+      }
+
+      if (diff.inHours < 24) {
+        return "${diff.inHours} jam yang lalu";
+      }
+
+      if (diff.inDays == 1) {
+        return "kemarin";
+      }
+
+      return "${diff.inDays} hari yang lalu";
+    } catch (e) {
+      return "-";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = _getCategoryColor(log.category);
@@ -29,17 +58,17 @@ class LogItemWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: color, 
-          width: 1.5,
+          color: color,
+          width: 1.4,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           )
         ],
       ),
@@ -47,6 +76,7 @@ class LogItemWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding:
@@ -59,14 +89,12 @@ class LogItemWidget extends StatelessWidget {
                 log.category,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-
             const SizedBox(height: 8),
-
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -74,9 +102,9 @@ class LogItemWidget extends StatelessWidget {
                   child: Text(
                     log.title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black, 
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -85,21 +113,29 @@ class LogItemWidget extends StatelessWidget {
                   constraints: const BoxConstraints(),
                   icon: Icon(
                     Icons.edit,
-                    size: 20,
-                    color: color, 
+                    size: 18,
+                    color: color,
                   ),
                   onPressed: onEdit,
                 ),
               ],
             ),
-
             const SizedBox(height: 4),
-
             Text(
               log.description,
               style: const TextStyle(
                 fontSize: 13,
-                color: Colors.black87, 
+                color: Colors.black87,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              _formatDate(log.date),
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.grey,
               ),
             ),
           ],
