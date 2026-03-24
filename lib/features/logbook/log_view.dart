@@ -41,10 +41,14 @@ class _LogViewState extends State<LogView> {
       _isOnline = result != ConnectivityResult.none;
     });
 
-    _connectivity.onConnectivityChanged.listen((result) {
+    _connectivity.onConnectivityChanged.listen((result) async {
       setState(() {
         _isOnline = result != ConnectivityResult.none;
       });
+
+      if (_isOnline) {
+        await _controller.syncLogs();
+      }
     });
   }
 
@@ -150,17 +154,8 @@ class _LogViewState extends State<LogView> {
           final log = filteredLogs[index];
           final bool isOwner = log.authorId == widget.currentUser['uid'];
 
-          final bool canEdit = AccessControlService.canPerform(
-            widget.currentUser['role'],
-            AccessControlService.actionUpdate,
-            isOwner: isOwner,
-          );
-
-          final bool canDelete = AccessControlService.canPerform(
-            widget.currentUser['role'],
-            AccessControlService.actionDelete,
-            isOwner: isOwner,
-          );
+          final bool canEdit = isOwner;
+          final bool canDelete = isOwner;
 
           return Dismissible(
             key: Key(log.id ?? index.toString()),

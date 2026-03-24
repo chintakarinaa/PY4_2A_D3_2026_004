@@ -23,12 +23,29 @@ class LogController {
 
     try {
       final cloudData = await MongoService().getLogs(teamId);
+      final localLogs = _myBox.values.toList();
 
-      await _myBox.clear();
-      await _myBox.addAll(cloudData);
+      for (var cloudLog in cloudData) {
+        final exists =
+            localLogs.any((local) => local.id == cloudLog.id);
 
-      logsNotifier.value = cloudData;
+        if (!exists) {
+          await _myBox.put(cloudLog.id, cloudLog);
+        }
+      }
+
+      logsNotifier.value = _myBox.values.toList();
     } catch (e) {}
+  }
+
+  Future<void> syncLogs() async {
+    final logs = _myBox.values.toList();
+
+    for (var log in logs) {
+      try {
+        await MongoService().insertLog(log);
+      } catch (e) {}
+    }
   }
 
   Future<void> addLog(
@@ -50,7 +67,7 @@ class LogController {
       category: category,
     );
 
-    await _myBox.add(newLog);
+    await _myBox.put(newLog.id, newLog);
 
     logsNotifier.value = [...logsNotifier.value, newLog];
 
@@ -110,19 +127,7 @@ class LogController {
 
     try {
       await MongoService().updateLog(updatedLog);
-
-      await LogHelper.writeLog(
-        "SUCCESS: Update '${updatedLog.title}'",
-        source: "log_controller.dart",
-        level: 2,
-      );
-    } catch (e) {
-      await LogHelper.writeLog(
-        "WARNING: Update lokal",
-        source: "log_controller.dart",
-        level: 1,
-      );
-    }
+    } catch (e) {}
   }
 
   Future<void> removeLog(String id) async {
@@ -140,11 +145,6 @@ class LogController {
       AccessControlService.actionDelete,
       isOwner: isOwner,
     )) {
-      await LogHelper.writeLog(
-        "SECURITY BREACH: Unauthorized delete attempt",
-        source: "log_controller.dart",
-        level: 1,
-      );
       return;
     }
 
@@ -159,18 +159,6 @@ class LogController {
       if (target.id != null) {
         await MongoService().deleteLog(target.id!);
       }
-
-      await LogHelper.writeLog(
-        "SUCCESS: Delete '${target.title}'",
-        source: "log_controller.dart",
-        level: 2,
-      );
-    } catch (e) {
-      await LogHelper.writeLog(
-        "WARNING: Delete lokal",
-        source: "log_controller.dart",
-        level: 1,
-      );
-    }
+    } catch (e) {}
   }
 }
